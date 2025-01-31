@@ -17,7 +17,6 @@ abstract class AppDatabase : RoomDatabase() {
 
 @Singleton
 class DatabaseHelper @Inject constructor(@ApplicationContext context: Context) {
-
     val db: AppDatabase = Room.databaseBuilder(
         context.applicationContext,
         AppDatabase::class.java,

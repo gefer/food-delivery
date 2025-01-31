@@ -5,8 +5,10 @@ import br.com.ifood.shared.network.NetworkDataSource
 import br.com.ifood.shared.network.NetworkResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class ProductRemoteDataSource(private val productService: ProductService) : NetworkDataSource<List<ProductDto>>() {
+class ProductRemoteDataSource @Inject constructor(private val productService: ProductService) :
+    NetworkDataSource<List<ProductDto>>() {
     override suspend fun fetchData(): Flow<NetworkResult<List<ProductDto>>> = flow {
         emit(fetchFromNetwork { productService.getProducts() })
     }

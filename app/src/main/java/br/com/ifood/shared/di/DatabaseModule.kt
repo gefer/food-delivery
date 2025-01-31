@@ -3,6 +3,7 @@ package br.com.ifood.shared.di
 import android.app.Application
 import androidx.room.Room
 import br.com.ifood.features.products.data.local.ProductDao
+import br.com.ifood.features.products.data.local.ProductLocalDataSource
 import br.com.ifood.shared.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -27,5 +28,10 @@ object DatabaseModule {
     @Provides
     fun provideProductDao(database: AppDatabase): ProductDao {
         return database.productDao()
+    }
+
+    @Provides
+    fun provideProductLocalDataSource(productDao: ProductDao): ProductLocalDataSource {
+        return ProductLocalDataSource(productDao)
     }
 }

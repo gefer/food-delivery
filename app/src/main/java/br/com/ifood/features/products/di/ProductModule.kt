@@ -4,8 +4,9 @@ import br.com.ifood.features.products.data.local.ProductLocalDataSource
 import br.com.ifood.features.products.data.remote.ProductRemoteDataSource
 import br.com.ifood.features.products.data.repository.ProductRepository
 import br.com.ifood.features.products.data.repository.ProductRepositoryImpl
-import br.com.ifood.features.products.domain.usecases.AddProductUseCase
+import br.com.ifood.features.products.domain.usecases.FetchProductsFromApiUseCase
 import br.com.ifood.features.products.domain.usecases.GetAllProductsUseCase
+import br.com.ifood.features.products.domain.usecases.SaveProductsToDbUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,13 +25,25 @@ object ProductModule {
     }
 
     @Provides
-    fun provideAddProductUseCase(repository: ProductRepository): AddProductUseCase {
-        return AddProductUseCase(repository)
+    fun provideGetAllProductsUseCase(
+        fetchProductsFromApiUseCase: FetchProductsFromApiUseCase,
+        repository: ProductRepository
+    ): GetAllProductsUseCase {
+        return GetAllProductsUseCase(fetchProductsFromApiUseCase, repository)
     }
 
     @Provides
-    fun provideGetProductsUseCase(repository: ProductRepository): GetAllProductsUseCase {
-        return GetAllProductsUseCase(repository)
+    fun provideFetchProductsFromApiUseCase(
+        repository: ProductRepository,
+        saveProductsToDbUseCase: SaveProductsToDbUseCase
+    ): FetchProductsFromApiUseCase {
+        return FetchProductsFromApiUseCase(repository, saveProductsToDbUseCase)
+    }
+
+    @Provides
+    fun provideSaveProductsToDbUseCase(productLocalDataSource: ProductLocalDataSource): SaveProductsToDbUseCase {
+        return SaveProductsToDbUseCase(productLocalDataSource)
     }
 }
+
 

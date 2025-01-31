@@ -19,5 +19,9 @@ class ProductLocalDataSource @Inject constructor(
     fun insertProduct(productEntity: ProductEntity) {
         productDao.insertProduct(productEntity)
     }
+
+    fun insertAllProducts(productEntityList: List<ProductEntity>) {
+        productDao.insertAll(productEntityList)
+    }
 }
 

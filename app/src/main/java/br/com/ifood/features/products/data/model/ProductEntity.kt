@@ -7,8 +7,7 @@ import androidx.room.PrimaryKey
 data class ProductEntity(
     @PrimaryKey val id: String,
     val name: String,
-    val details: String?,
-    val cost: Double,
-    val image: String
+    val details: String? = null,
+    val cost: Double = 0.00,
+    val image: String? = null
 )
-

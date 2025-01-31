@@ -18,5 +18,8 @@ interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProduct(productEntity: ProductEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(products: List<ProductEntity>)
 }
 

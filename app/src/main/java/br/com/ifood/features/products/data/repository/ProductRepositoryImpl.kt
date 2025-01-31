@@ -6,8 +6,9 @@ import br.com.ifood.features.products.data.model.ProductEntity
 import br.com.ifood.features.products.data.remote.ProductRemoteDataSource
 import br.com.ifood.shared.network.NetworkResult
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ProductRepositoryImpl(
+class ProductRepositoryImpl @Inject constructor(
     private val localDataSource: ProductLocalDataSource,
     private val remoteDataSource: ProductRemoteDataSource
 ) : ProductRepository {
