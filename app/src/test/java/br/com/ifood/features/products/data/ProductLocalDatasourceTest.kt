@@ -20,15 +20,15 @@ class ProductLocalDataSourceTest {
 
     @Before
     fun setUp() {
-        productDao = mockk()
+        productDao = mockk(relaxed = true)
         productLocalDataSource = ProductLocalDataSource(productDao)
     }
 
     @Test
     fun `getAllProducts should return flow of products from DAO`() = runTest {
         val productList = listOf(
-            ProductEntity(id = "1", name = "Product 1", cost = 10.0),
-            ProductEntity(id = "2", name = "Product 2", cost = 20.0)
+            ProductEntity(id = "1", name = "Pizza 1", cost = 10.0),
+            ProductEntity(id = "2", name = "Pizza 1", cost = 20.0)
         )
         every { productDao.getAllProducts() } returns flowOf(productList)
 
@@ -41,16 +41,25 @@ class ProductLocalDataSourceTest {
     }
 
     @Test
+    fun `getAllProducts should return an empty list when no products are available`() = runTest {
+        every { productDao.getAllProducts() } returns flowOf(emptyList())
+
+        val resultFlow = productLocalDataSource.getAllProducts()
+
+        resultFlow.test {
+            assertEquals(emptyList<ProductEntity>(), awaitItem()) // Verifica se uma lista vazia é emitida
+            awaitComplete() // Verifica se o Flow foi concluído
+        }
+    }
+
+    @Test
     fun `getProductById should return flow of product from DAO`() = runTest {
-        // Arrange
         val productId = "1"
-        val product = ProductEntity(id = productId, name = "Product 1", cost = 10.0)
+        val product = ProductEntity(id = productId, name = "Pizza 1", cost = 10.0)
         every { productDao.getProductById(productId) } returns flowOf(product)
 
-        // Act
         val resultFlow = productLocalDataSource.getProductById(productId)
 
-        // Assert
         resultFlow.test {
             assertEquals(product, awaitItem()) // Verifica se o produto correto é emitido
             awaitComplete() // Verifica se o Flow foi concluído
@@ -58,31 +67,48 @@ class ProductLocalDataSourceTest {
     }
 
     @Test
+    fun `getProductById should return null when product is not found`() = runTest {
+        val productId = "1"
+        every { productDao.getProductById(productId) } returns flowOf(null)
+
+        val resultFlow = productLocalDataSource.getProductById(productId)
+
+        resultFlow.test {
+            assertEquals(null, awaitItem()) // Verifica se null é emitido quando o produto não é encontrado
+            awaitComplete() // Verifica se o Flow foi concluído
+        }
+    }
+
+    @Test
     fun `insertProduct should call DAO insertProduct`() = runTest {
-        // Arrange
-        val product = ProductEntity(id = "1", name = "Product 1", cost = 10.0)
+        val product = ProductEntity(id = "1", name = "Pizza 1", cost = 10.0)
         every { productDao.insertProduct(product) } returns Unit
 
-        // Act
         productLocalDataSource.insertProduct(product)
 
-        // Assert
-        verify(exactly = 1) { productDao.insertProduct(product) } // Verifica se o método foi chamado
+        verify(exactly = 1) { productDao.insertProduct(product) } // Verifica se o método foi chamado uma vez
     }
 
     @Test
     fun `insertAllProducts should call DAO insertAll`() = runTest {
-        // Arrange
         val productList = listOf(
-            ProductEntity(id = "1", name = "Product 1", cost = 10.0),
-            ProductEntity(id = "2", name = "Product 2", cost = 20.0)
+            ProductEntity(id = "1", name = "Pizza 1", cost = 10.0),
+            ProductEntity(id = "2", name = "Pizza 2", cost = 20.0)
         )
         every { productDao.insertAll(productList) } returns Unit
 
-        // Act
         productLocalDataSource.insertAllProducts(productList)
 
-        // Assert
-        verify(exactly = 1) { productDao.insertAll(productList) } // Verifica se o método foi chamado
+        verify(exactly = 1) { productDao.insertAll(productList) } // Verifica se o método foi chamado uma vez
+    }
+
+    @Test
+    fun `insertAllProducts should call DAO insertAll with empty list`() = runTest {
+        val emptyProductList = emptyList<ProductEntity>()
+        every { productDao.insertAll(emptyProductList) } returns Unit
+
+        productLocalDataSource.insertAllProducts(emptyProductList)
+
+        verify(exactly = 1) { productDao.insertAll(emptyProductList) } // Verifica se o método foi chamado uma vez
     }
 }

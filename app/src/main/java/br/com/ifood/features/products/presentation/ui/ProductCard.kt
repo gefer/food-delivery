@@ -29,7 +29,7 @@ fun ProductCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(15.dp),
         shape = MaterialTheme.shapes.medium,
         backgroundColor = Color.White,
         contentColor = Color.Black,
@@ -57,17 +57,17 @@ fun ProductCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "$${product.price}",
+                text = "R$${product.price}",
                 style = MaterialTheme.typography.body1,
-                color = Color.Green
+                color = Color.Red
             )
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = onAddToCart,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue)
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
             ) {
-                Text(text = "Add to Cart", color = Color.White)
+                Text(text = "Adicionar", color = Color.White)
             }
         }
     }

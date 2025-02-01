@@ -28,30 +28,66 @@ class FetchProductsFromApiUseCaseTest {
     }
 
     @Test
-    fun `should fetch products from API and save them in DB`() = runTest {
+    fun `should fetch products from API, map to domain and save them in DB`() = runTest {
         val productsFromApi = listOf(ProductDto(id = "1", title = "Pizza de 4 Queijos"))
         val networkResult = NetworkResult.Success(productsFromApi)
 
+        // Alterando para coEvery para simular corretamente um retorno Unit
         coEvery { productRepository.getAllProductsFromApi() } returns flowOf(networkResult)
-        coEvery { saveProductsToDbUseCase.execute(productsFromApi) } returns Unit
+        coEvery { saveProductsToDbUseCase.executeAllProductDtos(productsFromApi) } returns Result.success(Unit)
 
         val result = fetchProductsFromApiUseCase.execute().first()
 
         assertEquals(1, result.size)
         assertEquals("Pizza de 4 Queijos", result.first().name)
-
-        coVerify { saveProductsToDbUseCase.execute(productsFromApi) }
+        coVerify { saveProductsToDbUseCase.executeAllProductDtos(productsFromApi) }
     }
 
     @Test
-    fun `should return empty list when API request fails`() = runTest {
+    fun `should return empty list when API request fails with error`() = runTest {
         val networkResult = NetworkResult.Error(code = 500, message = "API error")
 
         coEvery { productRepository.getAllProductsFromApi() } returns flowOf(networkResult)
+
         val result = fetchProductsFromApiUseCase.execute().first()
+
         assertEquals(0, result.size)
+        coVerify(exactly = 0) { saveProductsToDbUseCase.executeAllProductDtos(any()) }
     }
 
+    @Test
+    fun `should return empty list when API returns empty list of products`() = runTest {
+        val networkResult = NetworkResult.Success(emptyList<ProductDto>())
 
+        coEvery { productRepository.getAllProductsFromApi() } returns flowOf(networkResult)
+
+        val result = fetchProductsFromApiUseCase.execute().first()
+
+        assertEquals(0, result.size)
+        coVerify { saveProductsToDbUseCase.executeAllProductDtos(emptyList()) }
+    }
+
+    @Test
+    fun `should handle exception during API call and return empty list`() = runTest {
+        coEvery { productRepository.getAllProductsFromApi() } throws Exception("Network error")
+
+        val result = fetchProductsFromApiUseCase.execute().first()
+
+        assertEquals(0, result.size)
+        coVerify(exactly = 0) { saveProductsToDbUseCase.executeAllProductDtos(any()) }
+    }
+
+    @Test
+    fun `should map DTOs to domain objects correctly`() = runTest {
+        val productsFromApi = listOf(ProductDto(id = "1", title = "Pizza de 4 Queijos"))
+        val networkResult = NetworkResult.Success(productsFromApi)
+
+        coEvery { productRepository.getAllProductsFromApi() } returns flowOf(networkResult)
+
+        val result = fetchProductsFromApiUseCase.execute().first()
+
+        assertEquals(1, result.size)
+        val domainProduct = result.first()
+        assertEquals("Pizza de 4 Queijos", domainProduct.name)
+    }
 }
-
