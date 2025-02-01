@@ -18,7 +18,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://679c0ee933d316846325d8aa.mockapi.io/api/ifood")
+            .baseUrl("https://679c0ee933d316846325d8aa.mockapi.io/api/ifood/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

@@ -43,7 +43,11 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
+
+    hilt {
+        enableAggregatingTask = false
     }
 }
 
@@ -55,17 +59,25 @@ dependencies {
     implementation(libs.okhttp.logging)
 
     //Compose
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material)
-    implementation(libs.compose.tooling)
-    implementation(libs.compose.runtime)
-    implementation(libs.coil.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.compiler)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.io.coil.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
+
 
     //Hilt
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+
+    //Others
+    implementation(libs.javapoet)
 
     // Room
     ksp(libs.room.compiler)
