@@ -105,6 +105,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // JUnit, Mockito
+    testImplementation(libs.runner)
+    testImplementation(libs.rules)
     testImplementation(libs.mockk)
     testImplementation(libs.mockkCoroutines)
     testImplementation(libs.junit)
